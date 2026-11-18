@@ -1,4 +1,5 @@
 import { buildPredicate, compareBy, type PaymentsQuery } from "@/lib/filters";
+import { toUsdEstimate } from "@/lib/format";
 import { generatePayments } from "@/lib/mock/generate";
 import type { Payment, PaymentStatus } from "@/lib/types";
 
@@ -55,4 +56,44 @@ export function queryPayments(query: PaymentsQuery, now: number = Date.now()): P
     page,
     statusCounts,
   };
+}
+
+export interface CustomerSummary {
+  email: string;
+  name: string;
+  /** Method used on the most recent payment. */
+  defaultMethod: Payment["method"];
+  firstPaymentAt: number;
+  lastPaymentAt: number;
+  paymentCount: number;
+  /** Succeeded volume, normalized to USD cents with approximate rates. */
+  totalSpendUsd: number;
+  refundCount: number;
+}
+
+/** Customers derived from payments, newest activity first. */
+export function getCustomers(now: number = Date.now()): CustomerSummary[] {
+  const byEmail = new Map<string, CustomerSummary>();
+  // Payments are newest-first, so the first one seen per customer is the latest.
+  for (const p of getAllPayments(now)) {
+    let c = byEmail.get(p.customer.email);
+    if (!c) {
+      c = {
+        email: p.customer.email,
+        name: p.customer.name,
+        defaultMethod: p.method,
+        firstPaymentAt: p.created,
+        lastPaymentAt: p.created,
+        paymentCount: 0,
+        totalSpendUsd: 0,
+        refundCount: 0,
+      };
+      byEmail.set(p.customer.email, c);
+    }
+    c.paymentCount += 1;
+    c.firstPaymentAt = Math.min(c.firstPaymentAt, p.created);
+    if (p.status === "succeeded") c.totalSpendUsd += Math.round(toUsdEstimate(p.amount, p.currency) * 100);
+    if (p.status === "refunded") c.refundCount += 1;
+  }
+  return [...byEmail.values()];
 }

@@ -35,6 +35,14 @@ npm run build
 - **CSV export** of every row that matches the current filters and sort, not just the visible page.
 - "Edit columns" lets you hide or show columns; the choice is saved in `localStorage`.
 
+**Every other Dashboard page, with mock data.** Every sidebar item and Transactions tab opens a working page built from the same seeded data:
+- **Transactions tabs:** Payouts, Top-ups, Collected fees, Transfers and All activity. All activity lists the balance transactions behind each payment.
+- **Overview:** Home (today vs yesterday chart, KPI tiles, recent failures), Balances, and Customers (aggregated from payments; a click opens that customer's payments).
+- **Analysis and risk:** Payments analytics, Reports (CSV downloads), Sigma (query templates), Radar (rules and review queue), Disputes, and Revenue recognition.
+- **Products:** Product catalog, Subscriptions, Invoices, Payment links, Connect, Connected accounts, Tax, Issuing, Climate, and Developers (test-mode API keys, webhooks and request logs).
+
+Charts are hand-written inline SVG, so the app adds no chart dependency.
+
 ## How it's organized
 
 ```
@@ -42,12 +50,15 @@ src/
   app/                      routes: /payments, /payments/[id], not-found
   components/
     shell/                  Sidebar, TopBar
+    sections/               one folder per Dashboard section + registry.ts (slug -> page)
+    customers/              Customers page
     payments/               page sections, table, columns, filters/, cells/, details/
     ui/                     Radix wrappers (Popover, Tooltip, Menu, Checkbox), Button, icons
   hooks/                    usePaymentsQuery (URL <-> state), useHydrated
   lib/
     types.ts                domain model (PaymentMethod is a discriminated union)
-    mock/generate.ts        seeded PRNG data generator
+    mock/generate.ts        seeded PRNG payments generator (+ treasury, analytics, catalog)
+    sections.ts             section slugs, titles and Transactions tabs
     filters.ts              filter/sort types, predicates, URL parse/serialize
     paymentsService.ts      in-memory "API": query(filters, sort, page) -> rows, total, counts
     format.ts               money, dates and relative time (Intl), labels
