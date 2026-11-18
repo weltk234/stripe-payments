@@ -1,26 +1,98 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/*
+ * Stripe Dashboard design tokens (light theme), measured from the reference
+ * screenshot and the public Stripe Dashboard.
+ */
+@theme {
+  --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Ubuntu, sans-serif;
+
+  --color-ink: #353a44; /* primary text */
+  --color-ink-strong: #21252c; /* headings, amounts */
+  --color-muted: #596171; /* secondary text */
+  --color-subdued: #687385; /* tertiary text, icons */
+  --color-faint: #a3acba; /* placeholder, em dash */
+
+  --color-border: #ebeef1;
+  --color-border-strong: #d8dee4;
+  --color-surface: #ffffff;
+  --color-offset: #f6f8fa; /* hover rows, search, banner */
+  --color-offset-strong: #ebeef1;
+
+  --color-brand: #635bff;
+  --color-brand-hover: #5851ec;
+  --color-brand-text: #533afd;
+  --color-brand-soft: #f5f4ff;
+
+  --color-success-bg: #d7f7c2;
+  --color-success-border: #a6eb84;
+  --color-success-text: #006908;
+  --color-danger-bg: #ffe7f2;
+  --color-danger-border: #ffccdf;
+  --color-danger-text: #b3093c;
+  --color-neutral-bg: #ebeef1;
+  --color-neutral-border: #d5dbe1;
+  --color-neutral-text: #545969;
+  --color-warning-bg: #fcedb9;
+  --color-warning-border: #fbd992;
+  --color-warning-text: #a82c00;
+  --color-info-bg: #cff5f6;
+  --color-info-border: #a2e5ef;
+  --color-info-text: #045ad0;
+
+  --shadow-popover: 0 0 0 1px rgb(64 68 82 / 8%), 0 5px 15px 0 rgb(64 68 82 / 12%), 0 15px 35px 0 rgb(64 68 82 / 8%);
+  --shadow-button: 0 1px 1px 0 rgb(0 0 0 / 12%), 0 0 0 1px rgb(64 68 82 / 16%), 0 2px 5px 0 rgb(64 68 82 / 8%);
+  --shadow-button-primary: 0 1px 1px 0 rgb(0 0 0 / 12%), 0 2px 5px 0 rgb(60 66 87 / 8%);
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+@layer base {
+  html {
+    color-scheme: light;
+    /* keep focused/anchored elements clear of the sticky top bar */
+    scroll-padding-top: 64px;
+  }
+  body {
+    background: var(--color-surface);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    font-size: 14px;
+    line-height: 20px;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  :focus-visible {
+    outline: 2px solid rgb(99 91 255 / 50%);
+    outline-offset: 1px;
+  }
+  button {
+    cursor: pointer;
+  }
+  button:disabled {
+    cursor: default;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@layer utilities {
+  .tabular {
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+@keyframes popover-in {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.animate-popover-in {
+  animation: popover-in 120ms ease-out;
+}
+@media (prefers-reduced-motion: reduce) {
+  .animate-popover-in {
+    animation: none;
+  }
 }

@@ -1,36 +1,66 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Stripe Payments screen
 
-## Getting Started
+A rebuild of the Stripe Dashboard's **Transactions → Payments** screen in Next.js (App Router) and TypeScript.
 
-First, run the development server:
+## Running it
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
+npm run dev        # http://localhost:3000 → redirects to /payments
+npm test           # Vitest unit tests (formatting, filters, URL state, sorting, CSV)
+npm run typecheck
+npm run lint
+npm run build
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## What's included
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+**Payments table (required)**
+- Columns: Amount and currency, status badge, payment method (brand mark plus `•••• 4242`), description, customer, date, refunded date, decline reason, and **Payment ID** (shortened, with copy to clipboard).
+- Hovering a date shows a tooltip with the relative time ("3 hours ago") and the full timestamp.
+- Sorting by **Amount, Date and Status**. A click sorts by that column and a second click reverses it. **Shift+click adds a secondary sort** (multi-column); the header shows the sort order.
+- Client-side pagination with **25 / 50 / 100** rows per page.
+- Filters:
+  - **Date and time**: Today, Last 7 days, Last 30 days, Custom range.
+  - **Amount**: equal to, between, greater than, less than.
+  - **Currency**, **Status** and **Payment method** (Card / ACH / Wallet): multi-select.
+  - **Text search** by payment ID, email or last 4. It's in the top bar (press `/`) and also under "More filters".
+- The status cards (All, Succeeded, Refunded, …) are quick filters on the same `status` state.
+- Mock data: 640 payments from a seeded generator. They span about 90 days, in 6 currencies (including zero-decimal JPY and `R$` BRL), with all 8 statuses and card, Link, Apple Pay, Google Pay and ACH payment methods.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+**Nice-to-haves**
+- Left sidebar and top bar, with an account menu on the "cramly.ai" switcher.
+- Payment details page (`/payments/[id]`) with a timeline, fee breakdown, payment method, metadata and customer.
+- **All table state lives in the URL** (`?status=failed,refunded&amount=gt:20&date=30d&sort=-amount,-created&size=50&page=2`). Links can be shared and reloads keep the view.
+- **CSV export** of every row that matches the current filters and sort, not just the visible page.
+- "Edit columns" lets you hide or show columns; the choice is saved in `localStorage`.
 
-## Learn More
+## How it's organized
 
-To learn more about Next.js, take a look at the following resources:
+```
+src/
+  app/                      routes: /payments, /payments/[id], not-found
+  components/
+    shell/                  Sidebar, TopBar
+    payments/               page sections, table, columns, filters/, cells/, details/
+    ui/                     Radix wrappers (Popover, Tooltip, Menu, Checkbox), Button, icons
+  hooks/                    usePaymentsQuery (URL <-> state), useHydrated
+  lib/
+    types.ts                domain model (PaymentMethod is a discriminated union)
+    mock/generate.ts        seeded PRNG data generator
+    filters.ts              filter/sort types, predicates, URL parse/serialize
+    paymentsService.ts      in-memory "API": query(filters, sort, page) -> rows, total, counts
+    format.ts               money, dates and relative time (Intl), labels
+    csv.ts                  RFC 4180 CSV with formula-injection guard
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### Decisions and trade-offs
+- **Tailwind v4, Radix primitives and TanStack Table.** Radix provides accessible popovers, menus and tooltips without imposing any look. Tailwind tokens in `globals.css` hold Stripe's colors, shadows and sizes. TanStack Table runs in manual mode because the service already does the sorting and paging.
+- **The URL is the single source of truth** for filters, sort and paging. `parseQuery` and `serializeQuery` are pure functions with unit tests, and `serializeQuery` leaves out defaults, so `/payments` stays clean.
+- **Amounts are stored in minor units**, as in Stripe. Amount filters compare in each payment's own currency, the way Stripe does. Amount sorting uses an approximate USD value so ¥12,000 doesn't rank above $599.
+- **Hydration safety.** Dates depend on the clock and the viewer's time zone, so the table renders after hydration, with a skeleton until then. This avoids server/client mismatches.
+- **Payment ID column placement.** It sits after the reference's columns, so the default view at 1440px matches the reference screenshot. The ID can also be copied from the row's `···` menu and from the details page.
+- **Fonts.** Stripe uses the proprietary Söhne font, so this uses the system font stack as the closest freely available match.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Visual reference
+Measured from the provided screenshot, scaled to a 1440px-wide viewport: sidebar width, column offsets (within about 3px), row height, and the spacing of cards, pills and banner.
