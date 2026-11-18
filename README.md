@@ -31,7 +31,7 @@ npm run build
 
 **Nice-to-haves**
 
-- Left sidebar and top bar, with an account menu on the "cramly.ai" switcher.
+- Left sidebar and top bar, with an account menu on the account switcher ("Tomas Gonzalez").
 - Payment details page (`/payments/[id]`) with a timeline, fee breakdown, payment method, metadata and customer.
 - **All table state lives in the URL** (`?status=failed,refunded&amount=gt:20&date=30d&sort=-amount,-created&size=50&page=2`). Links can be shared and reloads keep the view.
 - **CSV export** of every row that matches the current filters and sort, not just the visible page.

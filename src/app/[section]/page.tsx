@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { SECTION_VIEWS } from "@/components/sections/registry";
 import { SECTIONS, isSectionSlug } from "@/lib/sections";
+import { pageTitle } from "@/lib/account";
 
 interface Props {
   params: Promise<{ section: string }>;
@@ -15,7 +16,7 @@ export function generateStaticParams() {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { section } = await params;
-  return { title: isSectionSlug(section) ? `${SECTIONS[section].title} – cramly.ai – Stripe` : "Stripe" };
+  return { title: isSectionSlug(section) ? pageTitle(SECTIONS[section].title) : "Stripe" };
 }
 
 export default async function SectionPage({ params }: Props) {

@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
 import { PaymentsView } from "@/components/payments/PaymentsView";
+import { pageTitle } from "@/lib/account";
 
-export const metadata: Metadata = { title: "Payments – cramly.ai – Stripe" };
+export const metadata: Metadata = { title: pageTitle("Payments") };
 
 export default function PaymentsPage() {
   // PaymentsView reads the URL (useSearchParams) and formats dates in the

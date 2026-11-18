@@ -31,6 +31,7 @@ import {
 import { cn } from "@/components/ui/cn";
 import { Menu, MenuContent, MenuItem, MenuLabel, MenuSeparator, MenuTrigger } from "@/components/ui/Menu";
 import { TRANSACTIONS_PATHS } from "@/lib/sections";
+import { ACCOUNT } from "@/lib/account";
 
 interface LinkItem {
   label: string;
@@ -237,7 +238,7 @@ function AccountMark({ size = "sm" }: { size?: "sm" | "lg" }) {
         size === "sm" ? "size-[22px] text-[7px]" : "size-8 text-[9px]",
       )}
     >
-      cmly
+      {ACCOUNT.initials}
     </span>
   );
 }
@@ -251,7 +252,7 @@ function AccountMenu() {
           className="flex h-8 w-full items-center gap-2 rounded-md px-1.5 text-left hover:bg-offset data-[state=open]:bg-offset"
         >
           <AccountMark />
-          <span className="flex-1 truncate text-[14px] font-semibold text-ink-strong">cramly.ai</span>
+          <span className="flex-1 truncate text-[14px] font-semibold text-ink-strong">{ACCOUNT.name}</span>
           <ChevronDown className="size-3.5 text-subdued" strokeWidth={2} aria-hidden />
         </button>
       </MenuTrigger>
@@ -259,8 +260,8 @@ function AccountMenu() {
         <div className="flex items-center gap-2.5 px-3 py-2">
           <AccountMark size="lg" />
           <div className="min-w-0">
-            <div className="truncate text-[14px] font-semibold text-ink-strong">cramly.ai</div>
-            <div className="truncate text-[12px] text-subdued">acct_1NxCramlyAi8Kp2</div>
+            <div className="truncate text-[14px] font-semibold text-ink-strong">{ACCOUNT.name}</div>
+            <div className="truncate text-[12px] text-subdued">{ACCOUNT.id}</div>
           </div>
         </div>
         <MenuSeparator />

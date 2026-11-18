@@ -14,6 +14,7 @@ import { PaymentMethodCell } from "../cells/PaymentMethodCell";
 import { StatusBadge } from "../cells/StatusBadge";
 import { KeyValueList, Section } from "./Section";
 import { Timeline } from "./Timeline";
+import { ACCOUNT } from "@/lib/account";
 
 /** Stripe's standard US pricing, used for an illustrative fee breakdown. */
 function fees(p: Payment) {
@@ -156,7 +157,7 @@ export function PaymentDetails({ id }: { id: string }) {
                   value: <span title={formatRelative(payment.created, now)}>{formatDate(payment.created, now)}</span>,
                 },
                 { label: "Description", value: payment.description },
-                { label: "Statement", value: "CRAMLY.AI" },
+                { label: "Statement", value: ACCOUNT.statementDescriptor },
               ]}
             />
           </Section>

@@ -1,6 +1,7 @@
 import { toUsdEstimate } from "@/lib/format";
 import { createRng } from "@/lib/mock/generate";
 import type { Payment, PaymentMethodType } from "@/lib/types";
+import { ACCOUNT } from "@/lib/account";
 
 const DAY_MS = 24 * 3600 * 1000;
 
@@ -227,7 +228,7 @@ export const RADAR_RULES: RadarRule[] = [
   {
     id: "r6",
     action: "Allow",
-    rule: "Allow if :email_domain: = 'cramly.ai'",
+    rule: `Allow if :email_domain: = '${ACCOUNT.domain}'`,
     description: "Custom rule",
     enabled: false,
   },

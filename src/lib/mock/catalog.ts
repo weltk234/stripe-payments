@@ -1,6 +1,7 @@
 import { createRng } from "@/lib/mock/generate";
 import { getCustomers } from "@/lib/paymentsService";
 import type { Currency } from "@/lib/types";
+import { ACCOUNT } from "@/lib/account";
 
 const DAY = 24 * 3600 * 1000;
 const BASE62 = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
@@ -219,7 +220,9 @@ export function getInvoices(now: number): Invoice[] {
     cursor -= rng.int(2, 18) * 3600 * 1000;
   }
   // Numbers increase with time, newest first in the list.
-  invoices.forEach((inv, i) => (inv.number = `CRMLY-${String(invoices.length - i).padStart(4, "0")}`));
+  invoices.forEach(
+    (inv, i) => (inv.number = `${ACCOUNT.invoicePrefix}-${String(invoices.length - i).padStart(4, "0")}`),
+  );
   return invoices;
 }
 
@@ -492,9 +495,9 @@ export function getDeveloperData(now: number) {
     secret: randomId(rng, "sk_test_51", 40),
   };
   const webhooks: WebhookEndpoint[] = [
-    { url: "https://api.cramly.ai/webhooks/stripe", events: 12, status: "enabled" as const },
-    { url: "https://billing.cramly.ai/stripe/events", events: 5, status: "enabled" as const },
-    { url: "https://staging.cramly.ai/hooks/stripe", events: 24, status: "disabled" as const },
+    { url: `https://api.${ACCOUNT.domain}/webhooks/stripe`, events: 12, status: "enabled" as const },
+    { url: `https://billing.${ACCOUNT.domain}/stripe/events`, events: 5, status: "enabled" as const },
+    { url: `https://staging.${ACCOUNT.domain}/hooks/stripe`, events: 24, status: "disabled" as const },
   ].map((w) => ({
     ...w,
     id: randomId(rng, "we_1"),

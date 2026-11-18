@@ -4,9 +4,10 @@ import { Sidebar } from "@/components/shell/Sidebar";
 import { TopBar } from "@/components/shell/TopBar";
 import { TooltipProvider } from "@/components/ui/Tooltip";
 import "./globals.css";
+import { pageTitle } from "@/lib/account";
 
 export const metadata: Metadata = {
-  title: "Payments – cramly.ai – Stripe",
+  title: pageTitle("Payments"),
   description: "Stripe Dashboard Payments screen rebuilt with Next.js and TypeScript.",
 };
 
